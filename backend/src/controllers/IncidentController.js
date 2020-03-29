@@ -15,6 +15,7 @@ module.exports = {
         "ongs.name",
         "ongs.email",
         "ongs.city",
+        "ongs.whatsapp",
         "ongs.uf"
       ]);
 
