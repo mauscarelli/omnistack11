@@ -25,14 +25,19 @@ module.exports = {
   async create(request, response) {
     const { title, description, value } = request.body;
     const ong_id = request.headers.authorization;
-    const [id] = await connection("incidents").insert({
-      title,
-      description,
-      value,
-      ong_id
-    });
+    try {
+      const [id] = await connection("incidents").insert({
+        title,
+        description,
+        value,
+        ong_id
+      });
 
-    return response.json({ id });
+      return response.json({ id });
+    } catch (err) {
+      console.log(err);
+      return response.status(400).json({error: "ONG não existente."});
+    }
   },
 
   async delete(request, response) {

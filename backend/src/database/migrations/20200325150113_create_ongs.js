@@ -1,5 +1,6 @@
 
 exports.up = function(knex) {
+  
   return knex.schema.createTable('ongs', function(table) {
       table.string('id').primary();
       table.string('name').notNullable();
@@ -7,6 +8,7 @@ exports.up = function(knex) {
       table.string('whatsapp').notNullable();
       table.string('city').notNullable();
       table.string('uf', 2).notNullable();
+      table.unique('name');
   });
 };
 

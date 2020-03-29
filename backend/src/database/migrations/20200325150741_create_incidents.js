@@ -8,10 +8,7 @@ exports.up = function(knex) {
 
     table.string("ong_id").notNullable();
 
-    table
-      .foreign("ong_id")
-      .references("id")
-      .inTable("ongs");
+    table.foreign("ong_id").references("ongs.id");
   });
 };
 

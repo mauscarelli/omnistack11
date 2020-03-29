@@ -40,6 +40,7 @@ routes.post("/incidents", IncidentController.create );
 routes.post("/sessions",SessionController.create);
 
 routes.delete("/incidents/:id", IncidentController.delete);
+routes.delete("/ongs",OngController.delete);
 
 
 module.exports = routes; //exportar a variável routes para que ela seja acessada a partir de outro arquivo

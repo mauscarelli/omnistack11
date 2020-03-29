@@ -7,14 +7,18 @@ module.exports = {
 
     const id = crypto.randomBytes(4).toString("HEX");
 
-    await connection("ongs").insert({
-      id,
-      name,
-      email,
-      whatsapp,
-      city,
-      uf
-    });
+    try {
+      await connection("ongs").insert({
+        id,
+        name,
+        email,
+        whatsapp,
+        city,
+        uf
+      });
+    }catch(e){
+      return response.status(400).json({error: "ONG já cadastrada anteriormente."});
+    }
 
     return response.json({ id });
   },
@@ -22,5 +26,13 @@ module.exports = {
   async index(request, response) {
     const ongs = await connection("ongs").select("*");
     return response.json(ongs);
+  },
+
+  async delete(request, response) {
+    const ong_id = request.headers.authorization;
+    await connection("ongs")
+      .where("id", ong_id)
+      .delete();
+    return response.status(204).send();
   }
 };
