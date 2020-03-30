@@ -1,4 +1,5 @@
 const express = require("express");
+const { celebrate, Segments, Joi } = require("celebrate");
 const routes = express.Router();
 const OngController = require("./controllers/OngController");
 const IncidentController = require("./controllers/IncidentController");
@@ -32,15 +33,87 @@ const SessionController = require("./controllers/SessionController");
  */
 
 routes.get("/ongs", OngController.index);
-routes.get("/incidents", IncidentController.index);
-routes.get("/profile", ProfileController.index);
 
-routes.post("/ongs", OngController.create);
-routes.post("/incidents", IncidentController.create );
-routes.post("/sessions",SessionController.create);
+routes.get(
+  "/incidents",
+  celebrate({
+    [Segments.QUERY]: Joi.object().keys({
+      pages: Joi.number()
+    })
+  }),
+  IncidentController.index
+);
 
-routes.delete("/incidents/:id", IncidentController.delete);
-routes.delete("/ongs",OngController.delete);
+routes.get(
+  "/profile",
+  celebrate({
+    [Segments.HEADERS]: Joi.object({
+      authorization: Joi.string().required()
+    }).unknown()
+  }),
+  ProfileController.index
+);
 
+routes.post(
+  "/ongs",
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      name: Joi.string().required(),
+      email: Joi.string()
+        .required()
+        .email(),
+      whatsapp: Joi.number()
+        .required()
+        .min(1000000000)
+        .max(99999999999),
+      city: Joi.string().required(),
+      uf: Joi.string()
+        .required()
+        .length(2)
+    })
+  }),
+  OngController.create
+);
+
+routes.post(
+  "/incidents",
+  celebrate({
+    [Segments.BODY]: Joi.object().keys({
+      title: Joi.string().required(),
+      description: Joi.string()
+        .required()
+        .email(),
+      value: Joi.number()
+        .required()
+        .min(1)
+        .max(12)
+    }),
+    [Segments.HEADERS]: Joi.object({
+      authorization: Joi.string().required()
+    }).unknown()
+  }),
+  IncidentController.create
+);
+
+routes.post("/sessions", celebrate({
+    [Segments.BODY]: Joi.object().keys({
+        id: Joi.string().required(),
+      })
+}), SessionController.create);
+
+routes.delete(
+  "/incidents/:id",
+  celebrate({
+    [Segments.PARAMS]: Joi.object().keys({
+      id: Joi.number().required()
+    }),
+    [Segments.HEADERS]: Joi.object({
+      authorization: Joi.string().required()
+    }).unknown()
+  }),
+  IncidentController.delete
+);
+
+routes.delete("/ongs", OngController.delete);
 
 module.exports = routes; //exportar a variável routes para que ela seja acessada a partir de outro arquivo
